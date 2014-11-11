@@ -84,6 +84,20 @@ class peopleModel extends Model {
     return $db->affected_rows($res) != 0;
   }
   
+  public function reject_friend_request($id, $friend_id) {
+    global $db;
+    $this->invalidate_dependency('friendrequest', $id);
+    $this->invalidate_dependency('friendrequest', $friend_id);
+    $person_id = $db->addslashes($id);
+    $friend_id = $db->addslashes($friend_id);
+    try {
+      $db->query("delete from friend_requests where person_id = $friend_id and friend_id = $person_id");
+    } catch (DBException $e) {
+      return false;
+    }
+    return true;
+  }
+
   public function load_get_friend_requests($id) {
     global $db;
     $this->add_dependency('friendrequest', $id);
