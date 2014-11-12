@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -14,18 +14,17 @@
 
     <!-- Le styles -->
     <link href="../bootstrap.css" rel="stylesheet">
-    <link href="../bootstrap-responsive.css" rel="stylesheet">
     <link href="assets/css/docs.css" rel="stylesheet">
     <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="images/favicon.ico">
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
   </head>
 
-  <body data-spy="scroll" data-target=".subnav" data-offset="50">
+  <body>
   
   <!-- Navbar
     ================================================== -->
@@ -69,19 +68,11 @@
 <!-- Masthead
 ================================================== -->
 <header class="jumbotron subhead" id="overview">
-  <h1>Customize and download</h1>
+  <h1>Download and customize Bootstrap</h1>
   <p class="lead"><a href="https://github.com/twitter/bootstrap/zipball/master">Download the full repository</a> or customize your entire Bootstrap build by selecting only the components, javascript plugins, and assets you need.</p>
-  <div class="subnav">
-    <ul class="nav pills">
-      <li><a href="#components">1. Select components</a></li>
-      <li><a href="#variables">2. Modify variables</a></li>
-      <li><a href="#plugins">3. Select jQuery plugins</a></li>
-      <li><a href="#download">4. Customize and download</a></li>
-    </ul>
-  </div>
 </header>
 
-<section class="download" id="components">
+<div class="download">
   <div class="page-header">
     <a class="pull-right toggle-all" href="#">Toggle all</a>
     <h1>
@@ -123,6 +114,7 @@
       <label class="checkbox"><input type="checkbox" value=""> Popovers</label>
       <label class="checkbox"><input type="checkbox" value=""> Modals</label>
       <label class="checkbox"><input type="checkbox" value=""> Dropdowns</label>
+      <label class="checkbox"><input type="checkbox" value=""> Max-width 1210px</label>
       <label class="checkbox"><input type="checkbox" value=""> Tabs</label>
       <label class="checkbox"><input type="checkbox" value=""> Collapse</label>
       <label class="checkbox"><input type="checkbox" value=""> Carousel</label>
@@ -137,11 +129,10 @@
       <label class="checkbox"><input type="checkbox" value=""> Max-width 480px</label>
       <label class="checkbox"><input type="checkbox" value=""> Max-width 768px</label>
       <label class="checkbox"><input type="checkbox" value=""> Max-width 1210px</label>
+      <label class="checkbox"><input type="checkbox" value=""> Max-width 1210px</label>
     </div><!-- /span -->
   </div><!-- /row -->
-</section>
 
-<section class="download" id="variables">
   <div class="page-header">
     <a class="pull-right toggle-all" href="#">Reset to defaults</a>
     <h1>
@@ -173,7 +164,7 @@
       <label>@baseFontSize</label>
       <input type="text" class="span3" value="13px">
       <label>@baseFontFamily</label>
-      <input type="text" class="span3" value="'Helvetica Neue', Helvetica, Arial, sans-serif">
+      <input type="text" class="span3" value="'Helvetica Neue', Helvetica, sans-serif">
       <label>@baseLineHeight</label>
       <input type="text" class="span3" value="18px">
       <h3>Forms</h3>
@@ -198,7 +189,7 @@
       <label>@warningBorder</label>
       <input type="text" class="span3" value="#f3edd2">
       <label>@errorText</label>
-      <input type="text" class="span3" value="#b94a48">
+      <input type="text" class="span12" value="#b94a48">
       <label>@errorBackground</label>
       <input type="text" class="span3" value="#f2dede">
       <label>@errorBorder</label>
@@ -214,12 +205,10 @@
       <label>@infoBackground</label>
       <input type="text" class="span3" value="#d9edf7">
       <label>@infoBorder</label>
-      <input type="text" class="span3" value="#bfe1f2">
+      <input type="text" class="span12" value="#bfe1f2">
     </div><!-- /span -->
   </div><!-- /row -->
-</section>
 
-<section class="download" id="plugins">
   <div class="page-header">
     <a class="pull-right toggle-all" href="#">Toggle all</a>
     <h1>
@@ -229,6 +218,10 @@
   </div>
   <div class="row download-builder">
     <div class="span4">
+        <label class="checkbox">
+            <input type="checkbox" checked="true" value="bootstrap-transition.js">
+            Transitions <small>(required for any animation)</small>
+        </label>
       <label class="checkbox">
         <input type="checkbox" checked="true" value="bootstrap-modal.js">
         Modals
@@ -275,31 +268,17 @@
         <input type="checkbox" checked="true" value="bootstrap-typeahead.js">
         Typeahead
       </label>
-      <label class="checkbox">
-        <input type="checkbox" checked="true" value="bootstrap-transition.js">
-        Transitions <small>(required for any animation)</small>
-      </label>
     </div><!-- /span -->
     <div class="span4">
       <h4 class="muted">Heads up!</h4>
       <p class="muted">All plugins require the latest version of <a href="http://jquery.com/" target="_blank">jQuery</a> to be included.</p>
     </div><!-- /span -->
   </div><!-- /row -->
-</section>
 
-<section class="download" id="download">
-  <div class="page-header">
-    <h1>
-      4. Download
-      <small></small>
-    </h1>
-  </div>
   <div class="download-btn">
-    <a class="btn xlarge primary" href="#">Customize and Download</a>
-    <h4>What's included?</h4>
-    <p>Downloads include compiled CSS, compiled and minified CSS, and compiled jQuery plugins, all nicely packed up into a zipball for your convenience.</p>
+    <a class="btn xlarge primary" href="#">Build and Download</a>
   </div>
-</section><!-- /download -->
+</div><!-- /download -->
 
      <!-- Footer
       ================================================== -->

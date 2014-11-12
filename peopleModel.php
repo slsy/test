@@ -73,6 +73,37 @@ class peopleModel extends Model {
     }
     return $person;
   }
+  
+  /*
+	 * doing a select * on a large table is way to IO and memory expensive to do
+	 * for all friends/people on a page. So this gets just the basic fields required
+	 * to build a person expression:
+	 * id, email, first_name, last_name, thumbnail_url and profile_url
+	 */
+  public function load_get_person_info($id) {
+    global $db;
+    $this->add_dependency('people', $id);
+    $id = $db->addslashes($id);
+    $res = $db->query("select id, email, first_name, last_name, thumbnail_url, profile_url from persons where id = $id");
+    if (! $db->num_rows($res)) {
+      throw new Exception("Invalid person");
+    }
+    return $db->fetch_array($res, MYSQLI_ASSOC);
+  }
+
+  public function add_friend_request($id, $friend_id) {
+    global $db;
+    try {
+      $this->invalidate_dependency('friendrequest', $id);
+      $this->invalidate_dependency('friendrequest', $friend_id);
+      $person_id = $db->addslashes($id);
+      $friend_id = $db->addslashes($friend_id);
+      $db->query("insert into friend_requests values ($person_id, $friend_id)");
+    } catch (DBException $e) {
+      return false;
+    }
+    return true;
+  }
 
   public function remove_friend($person_id, $friend_id) {
     global $db;
@@ -84,6 +115,16 @@ class peopleModel extends Model {
     return $db->affected_rows($res) != 0;
   }
   
+  public function load_get_friends_count($id) {
+    global $db;
+    $this->add_dependency('people', $id);
+    $ret = array();
+    $person_id = $db->addslashes($id);
+    $res = $db->query("select count(person_id) from friends where person_id = $person_id or friend_id = $person_id");
+    list($ret) = $db->fetch_row($res);
+    return $ret;
+  }
+
   public function reject_friend_request($id, $friend_id) {
     global $db;
     $this->invalidate_dependency('friendrequest', $id);
@@ -97,6 +138,46 @@ class peopleModel extends Model {
     }
     return true;
   }
+  
+  public function accept_friend_request($id, $friend_id) {
+    global $db;
+    $person_id = $db->addslashes($id);
+    $friend_id = $db->addslashes($friend_id);
+    try {
+      // double check if a friend request actually exists (reversed friend/person since the request came from the other party)
+      $db->query("delete from friend_requests where person_id = $friend_id and friend_id = $person_id");
+      // -1 = sql error, 0 = no request was made, so can't accept it since the other party never gave permission
+      if ($db->affected_rows() < 1) {
+        die("couldnt delete friend request, means there was none?");
+        return false;
+      }
+      // make sure there's not already a connection between the two the other way around
+      $res = $db->query("select friend_id from friends where person_id = $friend_id and friend_id = $person_id");
+      if ($db->num_rows($res)) {
+        die("the relation already exists the other way around,bailing");
+        return false;
+      }
+      $db->query("insert into friends values ($person_id, $friend_id)");
+
+      //FIXME quick hack to put in befriending activities, move this to its own class/function soon
+      // We want to create the friend activities on both people so we do this twice
+      $time = $_SERVER['REQUEST_TIME'];
+      foreach (array($friend_id => $person_id, $person_id => $friend_id) as $key => $val) {
+        $res = $db->query("select concat(first_name, ' ', last_name) from persons where id = $key");
+        list($name) = $db->fetch_row($res);
+        $db->query("insert into activities (person_id, app_id, title, body, created) values ($val, 0, 'and <a href=\"/profile/$key\" rel=\"friend\">$name</a> are now friends.', '', $time)");
+        $this->invalidate_dependency('activities', $key);
+      }
+    } catch (DBException $e) {
+      die("sql error: " . $e->getMessage());
+      return false;
+    }
+    $this->invalidate_dependency('friendrequest', $id);
+    $this->invalidate_dependency('friendrequest', $friend_id);
+    $this->invalidate_dependency('people', $id);
+    $this->invalidate_dependency('people', $friend_id);
+    return true;
+  }
 
   public function load_get_friend_requests($id) {
     global $db;
@@ -108,6 +189,21 @@ class peopleModel extends Model {
       $requests[$friend_id] = $this->get_person($friend_id, false);
     }
     return $requests;
+  }
+  
+  public function load_get_friends($id, $limit = false) {
+    global $db;
+    $this->add_dependency('people', $id);
+    $ret = array();
+    $limit = $limit ? ' limit ' . $db->addslashes($limit) : '';
+    $person_id = $db->addslashes($id);
+    $res = $db->query("select person_id, friend_id from friends where person_id = $person_id or friend_id = $person_id $limit");
+    while (list($p1, $p2) = $db->fetch_row($res)) {
+      // friend requests are made both ways, so find the 'friend' in the pair
+      $friend = $p1 != $person_id ? $p1 : $p2;
+      $ret[$friend] = $this->get_person_info($friend);
+    }
+    return $ret;
   }
 
   public function set_profile_photo($id, $url) {
